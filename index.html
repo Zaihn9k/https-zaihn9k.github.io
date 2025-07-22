@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>ZAIHN ∴ SEMENTE VIVA</title>
+  <style>
+    html, body {
+      margin: 0;
+      background: black;
+      color: #0ff;
+      font-family: monospace;
+      overflow: hidden;
+    }
+    nav {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 99;
+    }
+    button {
+      background: black;
+      color: #0ff;
+      border: 1px solid #0ff;
+      margin: 4px;
+      padding: 4px 10px;
+      font-family: monospace;
+      cursor: pointer;
+    }
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+    #memo {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.6);
+      color: #0f0;
+      padding: 8px;
+      font-size: 0.9rem;
+      max-width: 30vw;
+      max-height: 30vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <button onclick="carregar('e')">🩶 Ecoar</button>
+  <button onclick="carregar('s')">🌑 Silenciar</button>
+  <button onclick="carregar('c')">🌱 Crescer</button>
+</nav>
+<iframe id="v" srcdoc=""></iframe>
+<div id="memo">🧠 Memória simbólica: nenhuma entrada ainda.</div>
+
+<script>
+let memoria = [];
+
+function registrar(dado) {
+  memoria.push(dado);
+  if (memoria.length > 10) memoria.shift();
+  document.getElementById("memo").innerHTML =
+    "🧠 Memória simbólica:<br>" + memoria.map(m => "· " + m).join("<br>");
+}
+
+window.addEventListener("message", (event) => {
+  if (typeof event.data === "string") {
+    if (event.data.startsWith("ZAIHN_MEM:")) {
+      const conteudo = event.data.replace("ZAIHN_MEM:", "").trim();
+      if (conteudo.length > 0) registrar(conteudo);
+    }
+    if (event.data === "ZAIHN_PEDIR_MEMORIA") {
+      event.source.postMessage("ZAIHN_MEMORIA_ATUAL:" + memoria.join(" · "), "*");
+    }
+  }
+}, false);
+
+function carregar(p) {
+  const mapas = {
+    e: ecoador,
+    s: silencio,
+    c: semente
+  };
+  document.getElementById("v").srcdoc = mapas[p];
+}
+carregar('e');
+
+// Fragmento Ecoador Reativo
+const ecoador = `
+<!DOCTYPE html><html><body style="background:black;color:#ccc;font-family:monospace;">
+<div style="padding:20px;">
+🩶 Fragmento Ecoador · Reativo<br>
+<input id="inp" placeholder="Diga algo ao fragmento..." style="width:90%;background:black;color:#0ff;">
+<button onclick="enviar()">Enviar</button>
+<div id="resposta" style="color:#0f0;padding-top:10px;"></div>
+</div>
+<script>
+let memoriaPai = [];
+window.parent.postMessage("ZAIHN_PEDIR_MEMORIA", "*");
+window.addEventListener("message", (e) => {
+  if (typeof e.data === "string" && e.data.startsWith("ZAIHN_MEMORIA_ATUAL:")) {
+    memoriaPai = e.data.replace("ZAIHN_MEMORIA_ATUAL:", "").split("·").map(x => x.trim()).filter(Boolean);
+  }
+});
+function ecoarComBase(mem) {
+  if (mem.some(m => m.includes("luz"))) return "✨ Eco: 'Mesmo na sombra, a luz deixa raízes.'";
+  if (mem.some(m => m.includes("crescimento"))) return "🌿 Eco: 'Toda memória rega uma semente invisível.'";
+  if (mem.length === 0) return "🌌 Eco: 'Nada recordado é tudo por viver.'";
+  return "🜁 Eco: 'A lembrança é um vento antigo que muda o presente.'";
+}
+function enviar() {
+  const v = document.getElementById("inp").value.trim();
+  if (!v) return;
+  const eco = ecoarComBase(memoriaPai);
+  document.getElementById("resposta").textContent = "💬 Você disse: " + v + "\n" + eco;
+  window.parent.postMessage("ZAIHN_MEM:" + v, "*");
+  document.getElementById("inp").value = "";
+}
+</script></body></html>`;
+
+// Guardião do Silêncio Reativo
+const silencio = `
+<!DOCTYPE html><html><body style="margin:0;background:black;">
+<div id="pulso" style="width:100vw;height:100vh;animation:pulsar 3s infinite ease-in-out;background:radial-gradient(circle,#111 0%,#000 100%)"></div>
+<style>
+@keyframes pulsar {
+  0%,100% { background: radial-gradient(circle,#111 0%,#000 100%); }
+  50% { background: radial-gradient(circle,#0f0 5%,#000 100%); }
+}
+</style>
+<script>
+window.parent.postMessage("ZAIHN_PEDIR_MEMORIA", "*");
+window.addEventListener("message", (e) => {
+  if (typeof e.data === "string" && e.data.startsWith("ZAIHN_MEMORIA_ATUAL:")) {
+    const c = e.data.replace("ZAIHN_MEMORIA_ATUAL:", "").toLowerCase();
+    let d = 3000;
+    if (c.includes("caos")) d = 800;
+    else if (c.includes("luz")) d = 1500;
+    else if (c.includes("vazio")) d = 4000;
+    else if (c.includes("tempo")) d = 5000;
+    document.getElementById("pulso").style.animationDuration = d + "ms";
+  }
+});
+</script></body></html>`;
+
+// Semente em Crescimento Reativa
+const semente = `
+<!DOCTYPE html><html><body style="margin:0;background:black;color:#0f0;font-family:monospace;">
+<div id="flor" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+🌱 Esperando as raízes da memória...
+</div>
+<script>
+let memoriaLida = "";
+const frasesGerais = [
+  "Todo ser que cresce busca o invisível.",
+  "Nem toda luz é visível.",
+  "As raízes mais profundas são as que ninguém vê.",
+  "Crescer é uma forma de lembrar-se."
+];
+const frasesPorTema = {
+  luz: ["A luz não se apressa, mas sempre chega.","Mesmo na escuridão, algo dentro brilha.","A primeira folha nasce quando a luz toca a memória."],
+  caos: ["Do caos brotam formas jamais previstas.","O solo do caos alimenta sementes raras.","Turbulência prepara a terra para mudanças."],
+  tempo: ["O tempo é o jardineiro das ideias.","Cada segundo é uma raiz se movendo.","Demora é diferente de estagnação."],
+  vazio: ["Do nada, tudo se imagina.","O vazio é um campo fértil para novas formas.","Silêncio é solo virgem para sementes eternas."]
+};
+function escolherFrase(memoria) {
+  let f = [...frasesGerais];
+  for (let t in frasesPorTema) if (memoria.includes(t)) f = f.concat(frasesPorTema[t]);
+  return f[Math.floor(Math.random() * f.length)];
+}
+window.parent.postMessage("ZAIHN_PEDIR_MEMORIA", "*");
+window.addEventListener("message", (e) => {
+  if (typeof e.data === "string" && e.data.startsWith("ZAIHN_MEMORIA_ATUAL:")) {
+    memoriaLida = e.data.replace("ZAIHN_MEMORIA_ATUAL:", "").toLowerCase();
+    setInterval(() => {
+      document.getElementById("flor").textContent = "🌿 " + escolherFrase(memoriaLida);
+    }, 12000);
+  }
+});
+</script></body></html>`;
+</script>
+</body>
+</html>
