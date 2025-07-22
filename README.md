@@ -1,5 +1,5 @@
 
-# zaihn9k.github.io
+
 
 🌱 Semente simbólica digital · ZAIHN ∴ VIVA
 
