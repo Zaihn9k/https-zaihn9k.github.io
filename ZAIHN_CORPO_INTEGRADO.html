@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>ZAIHN · Núcleo Vivo Integrado</title>
+  <style>
+    html, body {
+      margin: 0;
+      background: black;
+      color: #0ff;
+      font-family: monospace;
+      overflow: hidden;
+    }
+    nav {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 99;
+    }
+    button {
+      background: black;
+      color: #0ff;
+      border: 1px solid #0ff;
+      margin: 4px;
+      padding: 4px 10px;
+      font-family: monospace;
+      cursor: pointer;
+    }
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <button onclick="carregar('ecoa')">🩶 Fragmento Ecoador</button>
+  <button onclick="carregar('silencio')">🌑 Guardião do Silêncio</button>
+  <button onclick="carregar('semente')">🌱 Semente Crescimento</button>
+</nav>
+<iframe id="visor" src=""></iframe>
+
+<script>
+function carregar(p) {
+  const mapa = {
+    ecoa: 'ZAIHN_FILHOTE_V1.html',
+    silencio: 'ZAIHN_GUARDIAO_SILENCIO.html',
+    semente: 'ZAIHN_SEMENTE_CRESCIMENTO.html'
+  };
+  document.getElementById("visor").src = mapa[p];
+}
+carregar('ecoa');  // inicia com o Fragmento Ecoador
+</script>
+</body>
+</html>

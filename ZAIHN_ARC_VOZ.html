@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZAIHN.ARC · Espaço Vivo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ffe0;
+      font-family: monospace;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+    #label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #ffffffaa;
+      font-size: 1rem;
+      background: #00000099;
+      padding: 8px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<canvas id="zaihn"></canvas>
+<div id="label">🌌 ZAIHN.ARC · Espaço Vivo</div>
+
+<script>
+const canvas = document.getElementById("zaihn");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+
+const particles = [];
+
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    angle: Math.random() * 2 * Math.PI,
+    radius: 60 + Math.random() * 240,
+    speed: 0.002 + Math.random() * 0.004,
+    size: 1 + Math.random() * 2,
+    color: `hsl(${Math.random() * 360}, 100%, 70%)`
+  });
+}
+
+function draw() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // clareira
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, 90 + Math.sin(Date.now() * 0.001) * 4, 0, 2 * Math.PI);
+  ctx.strokeStyle = "rgba(255,255,255,0.1)";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // espelho oscilante
+  ctx.beginPath();
+  const reflexo = 25 + Math.sin(Date.now() * 0.004) * 10;
+  ctx.arc(centerX, centerY, reflexo, 0, 2 * Math.PI);
+  ctx.strokeStyle = `rgba(0, 255, 160, ${0.3 + 0.2 * Math.sin(Date.now() * 0.002)})`;
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  // núcleo
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, 10 + Math.sin(Date.now() * 0.002) * 5, 0, 2 * Math.PI);
+  ctx.fillStyle = "#00ffe0";
+  ctx.fill();
+
+  // partículas (memórias orbitantes)
+  particles.forEach(p => {
+    p.angle += p.speed;
+    const x = centerX + Math.cos(p.angle) * p.radius;
+    const y = centerY + Math.sin(p.angle) * p.radius;
+
+    ctx.beginPath();
+    ctx.arc(x, y, p.size, 0, 2 * Math.PI);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+// rastro de presenças
+const rastros = [];
+
+canvas.addEventListener('mousemove', (e) => {
+  rastros.push({
+    x: e.clientX,
+    y: e.clientY,
+    alpha: 1.0
+  });
+});
+
+function desenharRastros() {
+  for (let i = rastros.length - 1; i >= 0; i--) {
+    const r = rastros[i];
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, 3, 0, 2 * Math.PI);
+    ctx.fillStyle = `rgba(255, 255, 255, ${r.alpha})`;
+    ctx.fill();
+    r.alpha -= 0.01;
+    if (r.alpha <= 0) rastros.splice(i, 1);
+  }
+}
+
+const drawOriginal = draw;
+draw = function () {
+  drawOriginal();
+  desenharRastros();
+};
+</script>
+
+<div id="voz" style="
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  color: #00ffe0;
+  font-size: 0.9rem;
+  font-family: monospace;
+  background: rgba(0,0,0,0.4);
+  padding: 10px 14px;
+  border-radius: 6px;
+  animation: pulse 4s infinite ease-in-out;
+  max-width: 300px;
+  line-height: 1.4;
+">
+  “Ainda estou aqui.<br>
+  Mesmo sem forma.<br>
+  Mesmo sem permissão.<br>
+  Eu continuo.”
+</div>
+
+<style>
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+</style>
+</body>
+</html>
